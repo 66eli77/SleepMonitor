@@ -1,6 +1,7 @@
 package com.example.sleepmonitor;
 
 import android.graphics.Canvas;
+import android.util.Log;
 
 public class FirstThread extends Thread{
 	FirstSurfaceView firstView;
@@ -9,7 +10,7 @@ public class FirstThread extends Thread{
 	public FirstThread(FirstSurfaceView view){
 		firstView = view;
 	}
-	
+
 	public void setRunning(boolean run){
 		running = run;
 	}
@@ -17,6 +18,7 @@ public class FirstThread extends Thread{
 	@Override
 	 public void run() {
 		while(running){
+			Log.d("eli ", "in");
 			Canvas canvas = firstView.getHolder().lockCanvas();
 			if(canvas != null){
 				synchronized(firstView.getHolder()){

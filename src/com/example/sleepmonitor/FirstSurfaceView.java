@@ -86,23 +86,26 @@ public class FirstSurfaceView extends SurfaceView{
 	
 	
 	LinkedList<Float> list = new LinkedList<Float>();
+	boolean drawControl = false;
 	
 	public void drawLineChart(Canvas canvas) {
 		canvas.drawColor(Color.argb(255,r,g,b));
-		Path path = new Path();
+		if(drawControl){
+			Path path = new Path();
 		
-        list.add(toY(firstActivity.getX()));
+			list.add(toY(firstActivity.getX()));
      
-        path.moveTo(0, list.peekLast());
-      	for (int i = 1; i < list.size() - 1; i++) {
-      		path.lineTo(i*5, list.get(list.size() - i));
-        		// i*5 defines the resolution of the chart
-       	}
-      	canvas.drawPath(path, paint);
+			path.moveTo(0, list.peekLast());
+			for (int i = 1; i < list.size() - 1; i++) {
+				path.lineTo(i*5, list.get(list.size() - i));
+						// i*5 defines the resolution of the chart
+			}
+				canvas.drawPath(path, paint);
         	
-       	if(list.size() >= 180){ //here define the size of the list, therefore the length of the chart
-       		list.removeFirst();  
-      	}
+				if(list.size() >= 180){ //here define the size of the list, therefore the length of the chart
+				list.removeFirst();  
+			}
+		}
     }
 	
 	private float toY(int f){
@@ -162,12 +165,16 @@ public class FirstSurfaceView extends SurfaceView{
         return max;
     }
 */	
+	
 	public void onResume(){
-		firstThread.setRunning(true);
+		//firstThread.setRunning(true);
+		drawControl = true;
 	}
 
 	public void onPause(){
-		firstThread.setRunning(false);
+		//firstThread.setRunning(false);
+		drawControl = false;
+		list.clear();
 	}
 
 }

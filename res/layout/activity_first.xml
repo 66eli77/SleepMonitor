@@ -43,7 +43,7 @@
    	    android:layout_width="match_parent"
    	    android:layout_height="60dp"
    	    android:background="#8FB2B2"
-   	    android:text="touch this line of letters for data input" />
+   	    android:text="touch this line of letters for mimicing accelerometer input" />
     
     <Switch
         android:id="@+id/switch1"

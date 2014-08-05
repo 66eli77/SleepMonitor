@@ -11,15 +11,19 @@ public class TimePickerFragment extends DialogFragment
 implements TimePickerDialog.OnTimeSetListener {
 	String timeString;
 	
+	public interface EditDialogListener{
+		void onFinishEditDialog(String inputText);
+	}
+	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-	// Use the current time as the default values for the picker
-	final Calendar c = Calendar.getInstance();
-	int hour = c.get(Calendar.HOUR_OF_DAY);
-	int minute = c.get(Calendar.MINUTE);
+		// Use the current time as the default values for the picker
+		final Calendar c = Calendar.getInstance();
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+		int minute = c.get(Calendar.MINUTE);
 
-	// Create a new instance of TimePickerDialog and return it
-	return new TimePickerDialog(getActivity(), this, hour, minute,
+		// Create a new instance of TimePickerDialog and return it
+		return new TimePickerDialog(getActivity(), this, hour, minute,
 		DateFormat.is24HourFormat(getActivity()));
 	}
 
@@ -28,12 +32,15 @@ implements TimePickerDialog.OnTimeSetListener {
 		// Do something with the time chosen by the user
 		if(hourOfDay > 12){
 			timeString = hourOfDay + ":" + minute + " PM ";
+			EditDialogListener passToActivity = (EditDialogListener)getActivity();
+			passToActivity.onFinishEditDialog(timeString);
+			this.dismiss();
 		}else{
 			timeString = hourOfDay + ":" + minute + " AM ";
+			EditDialogListener passToActivity = (EditDialogListener)getActivity();
+			passToActivity.onFinishEditDialog(timeString);
+			this.dismiss();
 		}
 	}
 	
-	public String getTimeString(){
-		return timeString;
-	}
 }

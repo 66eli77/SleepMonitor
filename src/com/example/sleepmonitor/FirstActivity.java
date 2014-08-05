@@ -1,12 +1,9 @@
 package com.example.sleepmonitor;
 
-import android.app.Activity;
-import android.app.DialogFragment;
-import android.content.Intent;
+import com.example.sleepmonitor.TimePickerFragment.EditDialogListener;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -15,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class FirstActivity extends FragmentActivity 
-implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener{
+implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDialogListener{
 	private FirstSurfaceView mySurfaceView;
 	private TextView tv1;
 	private TextView tv3;
@@ -53,6 +50,7 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener{
 	public boolean onTouch(View v, MotionEvent event) {
 		// TODO Auto-generated method stub
 		switch (event.getAction()) {
+		
 		case MotionEvent.ACTION_MOVE:
 			x = (int) event.getX();
 			y = (int) event.getY();
@@ -62,18 +60,34 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener{
 				//Toast.makeText(this, "tv1", Toast.LENGTH_SHORT).show();
 				newFragment1 = new TimePickerFragment();
 				newFragment1.show(getFragmentManager(), "timePicker");
-				tv1.setText("Earliest Alarm : " + newFragment1.getTimeString());
+				//tv1.setText("Earliest Alarm : " + newFragment1.getTimeString());
+				switchState = 1;
 			}
 			if(v.equals(tv3)){
 				newFragment2 = new TimePickerFragment();
 				newFragment2.show(getFragmentManager(), "timePicker");
+				switchState = 2;
 			}
 			if(v.equals(tv4)){
 				newFragment3 = new TimePickerFragment();
 				newFragment3.show(getFragmentManager(), "timePicker");
+				switchState = 3;
 			}
 		}
 		return true;
+	}
+	
+	int switchState = 3;
+	@Override
+	public void onFinishEditDialog(String inputText){
+		switch(switchState){
+		case 1:	tv1.setText("Earliest Alarm : " + inputText);
+				break;
+		case 2: tv3.setText("nap interval : " + inputText);
+				break;
+		case 3: tv4.setText("Must Wakeup Alarm : " + inputText);
+				break;
+		}
 	}
 /*	
 	@Override
@@ -95,13 +109,13 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener{
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		// TODO Auto-generated method stub
 		if(isChecked){
-			startService(new Intent(this, SensorService.class));
+//uncomment the next line of code will enable accelerometer service
+			//startService(new Intent(this, SensorService.class));
 			mySurfaceView.onResume();
-			//Toast.makeText(this, "Monitored switch is ON", Toast.LENGTH_SHORT).show();
 		}else{
-			stopService(new Intent(this, SensorService.class));
+//uncomment the next line of code will enable accelerometer service
+			//stopService(new Intent(this, SensorService.class));
 			mySurfaceView.onPause();
-			//Toast.makeText(this, "Monitored switch is OFF", Toast.LENGTH_SHORT).show();
 		}
 	}
 	
