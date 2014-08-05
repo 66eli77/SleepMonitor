@@ -12,24 +12,44 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_gravity="bottom" 
-        android:layout_marginBottom="100dp"/>
-
+        android:layout_marginBottom="70dp"/>
+    
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="t" />
-
-    <TextView
-        android:id="@+id/textView2"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_gravity="right" />
+        android:layout_height="40dp"
+        android:layout_marginTop="90dp"
+        android:background="#A3CCCC"
+        android:text="Earliest Alarm : " />
+    
+     <TextView
+         android:id="@+id/textView3"
+         android:layout_width="match_parent"
+         android:layout_height="40dp"
+         android:layout_marginTop="150dp"
+         android:background="#B8E6E6"
+         android:text="nap interval : " />
+     
+      <TextView
+          android:id="@+id/textView4"
+          android:layout_width="match_parent"
+          android:layout_height="40dp"
+          android:layout_marginTop="210dp"
+          android:background="#CCFFFF"
+          android:text="Must Wakeup Alarm : " />
+    
+   	<TextView
+   	    android:id="@+id/textView2"
+   	    android:layout_width="match_parent"
+   	    android:layout_height="60dp"
+   	    android:background="#8FB2B2"
+   	    android:text="touch this line of letters for data input" />
     
     <Switch
         android:id="@+id/switch1"
         android:layout_width="wrap_content"
-        android:layout_height="115dp"
-        android:text="Switch" />
+        android:layout_height="115dp" 
+        android:layout_gravity="center" 
+        android:layout_marginBottom="-40dp"/>
 
 </FrameLayout>

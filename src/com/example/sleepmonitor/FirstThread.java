@@ -25,7 +25,7 @@ public class FirstThread extends Thread{
 				firstView.getHolder().unlockCanvasAndPost(canvas);
 			}
 			try {
-				sleep(500);
+				sleep(30); //this define the frame rate of the chart
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

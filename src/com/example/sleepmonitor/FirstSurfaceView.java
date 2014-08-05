@@ -1,7 +1,6 @@
 package com.example.sleepmonitor;
 
-import java.util.ArrayList;
-
+import java.util.LinkedList;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -41,7 +40,6 @@ public class FirstSurfaceView extends SurfaceView{
 		paint = new Paint();
 		paint.setStrokeWidth(4);
 		paint.setShadowLayer(4, -4, 4, 0x80000000);
-		//paint.setShadowLayer(4, 2, 2, 0x80000000);
 		paint.setStyle(Style.STROKE);
 		//paint.setARGB(255, 100, 100, 200);
 		paint.setColor(0xFF33B5E5);
@@ -86,9 +84,36 @@ public class FirstSurfaceView extends SurfaceView{
 		});
 	}
 	
-	private float[] datapoints = new float[] { 10, 12, 7, 14, 15, 19, 13, 0, 10, 13, 13, 30, 15, 14 };
+	
+	LinkedList<Float> list = new LinkedList<Float>();
 	
 	public void drawLineChart(Canvas canvas) {
+		canvas.drawColor(Color.argb(255,r,g,b));
+		Path path = new Path();
+		
+        list.add(toY(firstActivity.getX()));
+     
+        path.moveTo(0, list.peekLast());
+      	for (int i = 1; i < list.size() - 1; i++) {
+      		path.lineTo(i*5, list.get(list.size() - i));
+        		// i*5 defines the resolution of the chart
+       	}
+      	canvas.drawPath(path, paint);
+        	
+       	if(list.size() >= 180){ //here define the size of the list, therefore the length of the chart
+       		list.removeFirst();  
+      	}
+    }
+	
+	private float toY(int f){
+		if(getHeight() - f - 4 < 0) return 0;
+		if(getHeight() - f - 4 > getHeight()) return getHeight();
+		return (float)getHeight() - f - 4;
+	}
+	
+/*
+	private float[] datapoints = new float[] { 10, 12, 7, 14, 15, 19, 13, 0, 10, 13, 13, 30, 15, 14 };
+	public void drawLineChart2(Canvas canvas) {
 		canvas.drawColor(Color.argb(255,r,g,b));
         Path path = new Path();
         path.moveTo(getXPos(0), getYPos(datapoints[0]));
@@ -136,133 +161,6 @@ public class FirstSurfaceView extends SurfaceView{
         }
         return max;
     }
-	
-/*
-	int startX = 0;
-	int startY = 0;
-	int stopY = 0;
-	ArrayList<Integer> list = new ArrayList<Integer>();
-
-	protected void drawSomething(Canvas canvas){
-		int width = canvas.getWidth();
-		int height = canvas.getHeight();
-		startY = height;
-		stopY = height;
-		canvas.drawColor(Color.argb(255,r,g,b));
-		if(startX > width){
-			canvas.save();
-			startX =0;
-			return;
-		}
-			canvas.drawLine(startX, height - firstActivity.getY(), startX + 40, height - firstActivity.getY(), myPaint);
-			startX++;
-		
-		
-		firstActivity.runOnUiThread(new Runnable(){
-			@Override
-			public void run(){
-				firstActivity.showTextView(startX + 100, stopY, startX, startY + firstActivity.getY());
-			}
-		});
-	}
-	
-	
-	int startX = 0;
-	int startY = 0;
-	int stopY = 0;
-	protected void drawSomething(Canvas canvas){
-		int height = canvas.getHeight();
-		startY = height - firstActivity.getY();
-		stopY = height - firstActivity.getY();
-		canvas.drawColor(Color.argb(255,r,g,b));
-		canvas.drawLine(startX, startY, startX + 100, stopY, myPaint);
-		startX++;
-		
-		firstActivity.runOnUiThread(new Runnable(){
-			@Override
-			public void run(){
-				firstActivity.showTextView(startX + 100, stopY, startX, startY);
-			}
-		});
-	}
-*/	
-	/*
- 	int startX = 0;
-	int startY = 0;
-	int stopY = 0;
-	ArrayList<Integer> list = new ArrayList<Integer>();
-
-	protected void drawSomething(Canvas canvas){
-		int width = canvas.getWidth();
-		int height = canvas.getHeight();
-		startY = height;
-		stopY = height;
-		list.add(height);
-		list.add(height - firstActivity.getY());
-		//startY = firstActivity.getY();
-		//stopY = firstActivity.getX();
-		canvas.drawColor(Color.argb(255,r,g,b));
-		for(int i = 0; i < list.size() - 1; i++){
-			canvas.drawLine(i, list.get(list.size() - i - 1), i + 10, list.get(list.size() - i - 2), myPaint);
-			//startX++;
-		}
-		if(list.size() == width)list.clear();
-		
-		firstActivity.runOnUiThread(new Runnable(){
-			@Override
-			public void run(){
-				firstActivity.showTextView(startX + 100, stopY, startX, startY + firstActivity.getY());
-			}
-		});
-	}
-	/*
-	///////////////////
-	int myX = 0;
-	int myY = 0;
-	protected void drawSomething(Canvas canvas){
-		int startX = 0;
-		int width = canvas.getWidth();
-		int height = canvas.getHeight();
-		int scale = height / m_iScaler;
-		canvas.drawColor(Color.argb(255,r,g,b));
-		
-		if(startX >= width){
-			canvas.save();
-	//		startX = 0;
-			return;
-		}
-	//	if(stopBaseY >= height){
-	//		stopBaseY = 0;
-	//	}
-
-		while(startX < width - 1){
-			int startBaseY = firstActivity.getY()/scale;
-			int stopBaseY = firstActivity.getX()/scale;
-			if(startBaseY > height / 2){
-				startBaseY = 1 + height / 2;
-		        int checkSize = height / 2;
-		        if (stopBaseY <= checkSize)
-		            return;
-		        stopBaseY = 2 + height / 2;
-			}
-			
-			int startY = startBaseY + height / 2;
-			int stopY = stopBaseY + height / 2;
-			canvas.drawLine(startX, startY, startX + 1, stopY, myPaint);
-			startX++;
-			int checkSize_again = -1 * (height / 2);
-			if (stopBaseY >= checkSize_again)
-		          continue;
-			 stopBaseY = -2 + -1 * (height / 2);
-		}
-
-		firstActivity.runOnUiThread(new Runnable(){
-			@Override
-			public void run(){
-				firstActivity.showTextView(firstActivity.getX(), firstActivity.getY(), myX, myY);
-			}
-		});
-	}
 */	
 	public void onResume(){
 		firstThread.setRunning(true);
