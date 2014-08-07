@@ -18,7 +18,7 @@ public class FirstThread extends Thread{
 	@Override
 	 public void run() {
 		while(running){
-			Log.d("eli ", "in");
+			//Log.d("eli ", "in");
 			Canvas canvas = firstView.getHolder().lockCanvas();
 			if(canvas != null){
 				synchronized(firstView.getHolder()){
@@ -27,7 +27,7 @@ public class FirstThread extends Thread{
 				firstView.getHolder().unlockCanvasAndPost(canvas);
 			}
 			try {
-				sleep(30); //this define the frame rate of the chart
+				sleep(100); //this define the frame rate of the chart
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

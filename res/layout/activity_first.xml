@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
@@ -11,45 +11,78 @@
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_gravity="bottom" 
-        android:layout_marginBottom="70dp"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"/>
     
     <TextView
         android:id="@+id/textView1"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="90dp"
-        android:background="#A3CCCC"
-        android:text="Earliest Alarm : " />
+        android:layout_alignParentTop="true"
+        android:background="#BABABA"
+        android:textSize="22sp"
+        android:text="@string/earliest_alarm" />
     
      <TextView
          android:id="@+id/textView3"
          android:layout_width="match_parent"
          android:layout_height="40dp"
          android:layout_marginTop="150dp"
-         android:background="#B8E6E6"
-         android:text="nap interval : " />
+         android:layout_alignParentTop="true"
+         android:background="#BABABA"
+         android:textSize="22sp"
+         android:text="@string/nap_interval" />
      
       <TextView
           android:id="@+id/textView4"
           android:layout_width="match_parent"
           android:layout_height="40dp"
           android:layout_marginTop="210dp"
-          android:background="#CCFFFF"
-          android:text="Must Wakeup Alarm : " />
+          android:layout_alignParentTop="true"
+          android:background="#BABABA"
+          android:textSize="22sp"
+          android:text="@string/must_wakeup_alarmm" />
     
    	<TextView
    	    android:id="@+id/textView2"
    	    android:layout_width="match_parent"
    	    android:layout_height="60dp"
-   	    android:background="#8FB2B2"
-   	    android:text="touch this line of letters for mimicing accelerometer input" />
+   	    android:background="#2EB8E6"
+   	    android:layout_alignParentTop="true"
+   	    android:text="Slide this Blue Strap for mimicing accelerometer input" />
     
     <Switch
         android:id="@+id/switch1"
         android:layout_width="wrap_content"
-        android:layout_height="115dp" 
-        android:layout_gravity="center" 
-        android:layout_marginBottom="-40dp"/>
+        android:layout_height="42dp"
+        android:layout_gravity="center"
+        android:layout_centerHorizontal="true" 
+        android:layout_centerVertical="true" 
+        android:layout_marginBottom="-10dp"
+        android:switchMinWidth="200dp" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/button1"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom|right"
+        android:background="#2EB8E6"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginRight="10dp"
+        android:text="enable accelerometer" />
+
+    <TextView
+        android:id="@+id/button2"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom|left"
+        android:background="#2EB8E6"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginLeft="10dp"
+        android:text="disable accelerometer" />
+
+</RelativeLayout>

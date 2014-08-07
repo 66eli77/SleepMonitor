@@ -35,6 +35,12 @@
             android:name="com.example.sleepmonitor.FirstActivity"
             android:label="@string/title_activity_first" >
         </activity>
+        <activity
+            android:name="com.example.sleepmonitor.AlarmReceiver" >
+        </activity>
+        <service 
+            android:enabled="true" 
+            android:name=".SensorService" />
     </application>
 
 </manifest>

@@ -10,6 +10,8 @@ import android.widget.TimePicker;
 public class TimePickerFragment extends DialogFragment
 implements TimePickerDialog.OnTimeSetListener {
 	String timeString;
+	public int hour;
+	public int minutes;
 	
 	public interface EditDialogListener{
 		void onFinishEditDialog(String inputText);
@@ -30,6 +32,9 @@ implements TimePickerDialog.OnTimeSetListener {
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 		// Do something with the time chosen by the user
+		hour = hourOfDay;
+		minutes = minute;
+		
 		if(hourOfDay > 12){
 			timeString = hourOfDay + ":" + minute + " PM ";
 			EditDialogListener passToActivity = (EditDialogListener)getActivity();

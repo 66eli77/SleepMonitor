@@ -7,5 +7,9 @@
     <string name="title_activity_second">MainActivity</string>
     <string name="title_activity_third">MainActivity</string>
     <string name="title_activity_first">MainActivity</string>
+    
+    <string name="earliest_alarm">Earliest Alarm : </string>
+    <string name="nap_interval">NO Nap Interval : </string>
+    <string name="must_wakeup_alarmm">NO Must Wakeup Alarm : </string>
 
 </resources>
