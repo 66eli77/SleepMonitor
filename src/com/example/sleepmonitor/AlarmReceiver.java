@@ -27,21 +27,28 @@ public class AlarmReceiver extends Activity{
 	        public void onClick(DialogInterface dialog, int which) { 
 	            // continue with delete
 	        	mMediaPlayer.stop();
-	        	finish();
+	        
 	        	
 	        	Intent myIntent = new Intent(AlarmReceiver.this, MainActivity.class);
 				myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(myIntent);
+	            
+	           // finish();
+	            android.os.Process.killProcess(android.os.Process.myPid());
+	            //System.exit(0);
+	            //onDestroy();
 	        }
 	     })
 	    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int which) { 
 	        	mMediaPlayer.stop();
-	        	finish();
+	        	//finish();
 	        	
 	        	Intent myIntent = new Intent(AlarmReceiver.this, MainActivity.class);
 				myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(myIntent);
+	            
+	            finish();
 	        }
 	     })
 	    .setIcon(android.R.drawable.ic_dialog_alert)
@@ -49,6 +56,25 @@ public class AlarmReceiver extends Activity{
 		
 		playSound(this, getAlarmUri());
     }
+ /*   
+    @Override
+    public void onBackPressed() {
+    	Intent myIntent = new Intent(AlarmReceiver.this, MainActivity.class);
+		myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(myIntent);
+    }
+ */   
+    @Override
+    public void onPause(){
+    	super.onPause();
+		mMediaPlayer.stop();
+    }
+    
+    @Override
+	protected void onStop() {
+		super.onStop();
+		mMediaPlayer.stop();
+	}
  
     private void playSound(Context context, Uri alert) {
         mMediaPlayer = new MediaPlayer();

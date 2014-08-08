@@ -79,10 +79,6 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 		tv3.setText("No Nap Interval : " + nap_interval);
 		String Must_Wakeup_Alarm = sharedPreferences.getString("Must_Wakeup_Alarm", "0:00");
 		tv4.setText("No Must Wakeup Alarm : " + Must_Wakeup_Alarm);	
-		
-//		if(alarmMgr != null){
-	//		alarmMgr.cancel(alarmIntent);
-		//}
 	}
 	
 	//return touch x y coordinates
@@ -128,6 +124,7 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 		return true;
 	}
 	
+	//final Intent intent = new Intent(this.getApplicationContext(), MainActivity.class);
 	int switchState = 3;
 	@Override
 	public void onFinishEditDialog(String inputText){
@@ -140,7 +137,9 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 				calendar.setTimeInMillis(System.currentTimeMillis());
 				calendar.set(Calendar.HOUR_OF_DAY, newFragment1.hour);
 				calendar.set(Calendar.MINUTE, newFragment1.minutes);
-				Intent intent = new Intent(this, AlarmReceiver.class);
+				Intent intent = new Intent(this, MainActivity.class);   //define alarm callback which activity
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				intent.putExtra("methodName","alarmDialog");
 				alarmIntent = PendingIntent.getActivity(this, 12345, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 				alarmMgr = (AlarmManager)this.getSystemService(Activity.ALARM_SERVICE);
 				alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
@@ -162,13 +161,12 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 				break;
 		}
 	}
-
-/*	
+	
 	@Override
 	protected void onResume() {
         super.onResume();
 	}
-	
+/*
 	@Override
 	protected void onPause() {
         super.onPause();
@@ -204,23 +202,23 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 	public int getSensorData(){
 		Sensordata = 0;
 		if(accel){
-		Sensordata = myReceiver.getDataPassed();
+		Sensordata = mySensorReceiver.getDataPassed();
 		}
 		Sensordata += x/3;
 		x = 0;
 		return Sensordata;
 	}
 	
-	private MyReceiver myReceiver;
+	private SensorReceiver mySensorReceiver;
 	
 	@Override
 	protected void onStart() {	 
 		//Register BroadcastReceiver
 		//to receive event from our service
-	    myReceiver = new MyReceiver();
+		mySensorReceiver = new SensorReceiver();
 	    IntentFilter intentFilter = new IntentFilter();
 	    intentFilter.addAction(SensorService.MY_ACTION);
-	    registerReceiver(myReceiver, intentFilter);
+	    registerReceiver(mySensorReceiver, intentFilter);
 	     
 	    //Start our own service
 	    Intent intent = new Intent(FirstActivity.this, SensorService.class);
@@ -231,11 +229,11 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 	
 	@Override
 	protected void onStop() {
-		unregisterReceiver(myReceiver);
+		unregisterReceiver(mySensorReceiver);
 		super.onStop();
 	}
 	
-	private class MyReceiver extends BroadcastReceiver{
+	private class SensorReceiver extends BroadcastReceiver{
 		int datapassed = 0;
 		
 		 @Override

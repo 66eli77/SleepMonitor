@@ -18,7 +18,7 @@ public class SensorService extends Service implements SensorEventListener{
 	
 	@Override
 	  public int onStartCommand(Intent intent, int flags, int startId) {
-		Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();		 		 
+		//Toast.makeText(this, "onStartCommand", Toast.LENGTH_SHORT).show();		 		 
 		return Service.START_STICKY;
 	}
 	
@@ -30,7 +30,7 @@ public class SensorService extends Service implements SensorEventListener{
 
 	@Override
 	public void onCreate() {
-		Toast.makeText(this, "Sensor Service Created", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "Sensor Service Created", Toast.LENGTH_SHORT).show();
 		myManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 		accel = myManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		myManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_GAME);
@@ -38,7 +38,7 @@ public class SensorService extends Service implements SensorEventListener{
 	
 	@Override
 	public void onDestroy() {
-		Toast.makeText(this, "Sensor Service Stopped", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "Sensor Service Stopped", Toast.LENGTH_SHORT).show();
 		myManager.unregisterListener(this);
 	}
 	
