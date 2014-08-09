@@ -14,9 +14,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,9 +32,10 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 	private TextView tv3;
 	private TextView tv4;
 	private Switch switch1;
-	TimePickerFragment newFragment1;
-	TimePickerFragment newFragment2;
-	TimePickerFragment newFragment3;
+	private ImageView imageView1;
+	TimePickerFragment timePickerFragment1;
+	TimePickerFragment timePickerFragment2;
+	TimePickerFragment timePickerFragment3;
 	int x;
 	int y;
 	private MySettings mySetting;
@@ -54,6 +59,7 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 		button1 = (TextView) findViewById(R.id.button1);
 		button2 = (TextView) findViewById(R.id.button2);
 		
+		imageView1 = (ImageView) findViewById(R.id.imageView1);
 		switch1 = (Switch) findViewById(R.id.switch1);
 		tv1 = (TextView) findViewById(R.id.textView1);
 		tv3 = (TextView) findViewById(R.id.textView3);
@@ -63,6 +69,8 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 		tv1.setOnTouchListener(this);
 		tv3.setOnTouchListener(this);
 		tv4.setOnTouchListener(this);
+		imageView1.setOnTouchListener(this);
+		mySurfaceView.setOnTouchListener(this);
 		
 		button1.setOnTouchListener(this);
 		button2.setOnTouchListener(this);
@@ -74,7 +82,11 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 		boolean switch_state = sharedPreferences.getBoolean("Switch_State", false);
 		switch1.setChecked(switch_state);
 		String Earliest_Alarm = sharedPreferences.getString("Earliest_Alarm", "0:00");
-		tv1.setText("Earliest Alarm : " + Earliest_Alarm);
+		//make "am/pm" half as smaller
+		Spannable span = new SpannableString(Earliest_Alarm);
+		span.setSpan(new RelativeSizeSpan(0.5f), Earliest_Alarm.length()-3, 
+				Earliest_Alarm.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		tv1.setText(span);
 		String nap_interval = sharedPreferences.getString("nap_interval", "0:00");
 		tv3.setText("No Nap Interval : " + nap_interval);
 		String Must_Wakeup_Alarm = sharedPreferences.getString("Must_Wakeup_Alarm", "0:00");
@@ -100,25 +112,50 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 		case MotionEvent.ACTION_DOWN:
 			if(v.equals(tv1)){
 				//Toast.makeText(this, "tv1", Toast.LENGTH_SHORT).show();
-				newFragment1 = new TimePickerFragment();
-				newFragment1.show(getFragmentManager(), "timePicker");
+				timePickerFragment1 = new TimePickerFragment();
+				timePickerFragment1.show(getFragmentManager(), "timePicker");
 				switchState = 1;
+				break;
 			}
 			if(v.equals(tv3)){
-				newFragment2 = new TimePickerFragment();
-				newFragment2.show(getFragmentManager(), "timePicker");
+				timePickerFragment2 = new TimePickerFragment();
+				timePickerFragment2.show(getFragmentManager(), "timePicker");
 				switchState = 2;
+				break;
 			}
 			if(v.equals(tv4)){
-				newFragment3 = new TimePickerFragment();
-				newFragment3.show(getFragmentManager(), "timePicker");
+				timePickerFragment3 = new TimePickerFragment();
+				timePickerFragment3.show(getFragmentManager(), "timePicker");
 				switchState = 3;
+				break;
 			}
 			if(v.equals(button1)){
 				accel = true;
+				break;
 			}
 			if(v.equals(button2)){
 				accel = false;
+				break;
+			}
+			if(v.equals(imageView1)){
+				imageView1.setImageResource(R.drawable.button_stainless_start_on);
+				mySurfaceView.onResume();
+				break;
+			}
+			if(v.equals(mySurfaceView)){
+				//Toast.makeText(this, "surface", Toast.LENGTH_SHORT).show();
+				imageView1.setVisibility (View.VISIBLE);
+				mySurfaceView.onPause();
+				switch1.setChecked(false);
+				break;
+			}
+			
+		case MotionEvent.ACTION_UP:
+			if(v.equals(imageView1)){
+				imageView1.setImageResource(R.drawable.button_stainless_start_off);
+				//Toast.makeText(this, "invis", Toast.LENGTH_SHORT).show();
+				imageView1.setVisibility (View.INVISIBLE);
+				break;
 			}
 		}
 		return true;
@@ -130,17 +167,23 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 	public void onFinishEditDialog(String inputText){
 		switch(switchState){
 		case 1:	mySetting.savePreferences("Earliest_Alarm", inputText);
-				tv1.setText("Earliest Alarm : " + inputText);
-				
+				//make "am/pm" half as smaller
+				Spannable span = new SpannableString(inputText);
+				span.setSpan(new RelativeSizeSpan(0.5f), inputText.length()-3, 
+						inputText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				tv1.setText(span);
 				//set the alarm
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(System.currentTimeMillis());
-				calendar.set(Calendar.HOUR_OF_DAY, newFragment1.hour);
-				calendar.set(Calendar.MINUTE, newFragment1.minutes);
+				calendar.set(Calendar.HOUR_OF_DAY, timePickerFragment1.hour);
+				calendar.set(Calendar.MINUTE, timePickerFragment1.minutes);
+				if(calendar.getTimeInMillis() < System.currentTimeMillis()){
+					calendar.add(Calendar.DAY_OF_MONTH, 1);
+				}
 				Intent intent = new Intent(this, MainActivity.class);   //define alarm callback which activity
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				intent.putExtra("methodName","alarmDialog");
-				alarmIntent = PendingIntent.getActivity(this, 12345, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+				alarmIntent = PendingIntent.getActivity(this, 12345, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 				alarmMgr = (AlarmManager)this.getSystemService(Activity.ALARM_SERVICE);
 				alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
 				//Toast.makeText(this, "hour " + newFragment1.hour + " minute " + newFragment1.minutes, Toast.LENGTH_SHORT).show();
@@ -184,13 +227,14 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 			startService(new Intent(this, SensorService.class));
 			mySurfaceView.onResume();
 			mySetting.savePreferences("Switch_State", true);
+			imageView1.setVisibility (View.INVISIBLE);
 		}else{
 //uncomment the next line of code will enable accelerometer service
 			stopService(new Intent(this, SensorService.class));
 			mySurfaceView.onPause();
 			mySetting.savePreferences("Switch_State", false);
-			
-			// If the alarm has been set, cancel it.
+			imageView1.setVisibility (View.VISIBLE);
+			// If the alarm has been set, cancel it.   Don's know if this works???
 			if (alarmMgr!= null) {
 			    alarmMgr.cancel(alarmIntent);
 			}

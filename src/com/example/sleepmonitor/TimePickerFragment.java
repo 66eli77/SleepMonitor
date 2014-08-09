@@ -4,7 +4,6 @@ import java.util.Calendar;
 
 import android.app.*;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
 public class TimePickerFragment extends DialogFragment
@@ -25,8 +24,7 @@ implements TimePickerDialog.OnTimeSetListener {
 		int minute = c.get(Calendar.MINUTE);
 
 		// Create a new instance of TimePickerDialog and return it
-		return new TimePickerDialog(getActivity(), this, hour, minute,
-		DateFormat.is24HourFormat(getActivity()));
+		return new TimePickerDialog(getActivity(), this, hour, minute,false);
 	}
 
 	@Override
@@ -34,14 +32,22 @@ implements TimePickerDialog.OnTimeSetListener {
 		// Do something with the time chosen by the user
 		hour = hourOfDay;
 		minutes = minute;
-		
+	
 		if(hourOfDay > 12){
-			timeString = hourOfDay + ":" + minute + " PM ";
+			if(minute == 0){
+				timeString = (hourOfDay - 12) + ":" + "00" + " PM ";
+			}else{
+				timeString = (hourOfDay - 12) + ":" + minute + " PM ";
+			}
 			EditDialogListener passToActivity = (EditDialogListener)getActivity();
 			passToActivity.onFinishEditDialog(timeString);
 			this.dismiss();
 		}else{
-			timeString = hourOfDay + ":" + minute + " AM ";
+			if(minute == 0){
+				timeString = hourOfDay + ":" + "00" + " AM ";
+			}else{
+				timeString = hourOfDay + ":" + minute + " AM ";
+			}
 			EditDialogListener passToActivity = (EditDialogListener)getActivity();
 			passToActivity.onFinishEditDialog(timeString);
 			this.dismiss();
