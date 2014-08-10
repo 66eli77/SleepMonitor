@@ -2,7 +2,6 @@ package com.example.sleepmonitor;
 
 import java.util.Calendar;
 
-import com.example.sleepmonitor.TimePickerFragment.EditDialogListener;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -14,6 +13,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
@@ -33,16 +33,17 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 	private TextView tv4;
 	private Switch switch1;
 	private ImageView imageView1;
-	TimePickerFragment timePickerFragment1;
-	TimePickerFragment timePickerFragment2;
-	TimePickerFragment timePickerFragment3;
+	private HourMinuteTimePicker hourMinutePicker_1;
+	private HourMinuteTimePicker hourMinutePicker_3;
+	private NumPicker myNumPicker;
 	int x;
 	int y;
 	private MySettings mySetting;
-	TextView button1;
-	TextView button2;
+	TextView disable_accel;
+	TextView enable_accel;
 	private AlarmManager alarmMgr;
 	private PendingIntent alarmIntent;
+	private SharedPreferences sharedPreferences;
 	    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,28 +57,28 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 			mSwitch.setOnCheckedChangeListener(this);
 		}
 		
-		button1 = (TextView) findViewById(R.id.button1);
-		button2 = (TextView) findViewById(R.id.button2);
+		enable_accel = (TextView) findViewById(R.id.button1);
+		disable_accel = (TextView) findViewById(R.id.button2);
 		
 		imageView1 = (ImageView) findViewById(R.id.imageView1);
 		switch1 = (Switch) findViewById(R.id.switch1);
 		tv1 = (TextView) findViewById(R.id.textView1);
 		tv3 = (TextView) findViewById(R.id.textView3);
 		tv4 = (TextView) findViewById(R.id.textView4);
-		View touchView = findViewById(R.id.textView2);
-		touchView.setOnTouchListener(this);
+		//View touchView = findViewById(R.id.textView2);
+		//touchView.setOnTouchListener(this);
 		tv1.setOnTouchListener(this);
 		tv3.setOnTouchListener(this);
 		tv4.setOnTouchListener(this);
 		imageView1.setOnTouchListener(this);
 		mySurfaceView.setOnTouchListener(this);
 		
-		button1.setOnTouchListener(this);
-		button2.setOnTouchListener(this);
+		enable_accel.setOnTouchListener(this);
+		disable_accel.setOnTouchListener(this);
 		
 		mySetting = new MySettings(this);
 		//routine for loading the settings
-		SharedPreferences sharedPreferences = PreferenceManager
+		sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		boolean switch_state = sharedPreferences.getBoolean("Switch_State", false);
 		switch1.setChecked(switch_state);
@@ -87,10 +88,12 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 		span.setSpan(new RelativeSizeSpan(0.5f), Earliest_Alarm.length()-3, 
 				Earliest_Alarm.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		tv1.setText(span);
-		String nap_interval = sharedPreferences.getString("nap_interval", "0:00");
-		tv3.setText("No Nap Interval : " + nap_interval);
+		String nap_interval = sharedPreferences.getString("nap_interval", "0");
+		tv3.setText("Nap Interval : " + nap_interval + " minutes");
 		String Must_Wakeup_Alarm = sharedPreferences.getString("Must_Wakeup_Alarm", "0:00");
 		tv4.setText("No Must Wakeup Alarm : " + Must_Wakeup_Alarm);	
+		
+		hourMinutePicker_1 = new HourMinuteTimePicker();
 	}
 	
 	//return touch x y coordinates
@@ -112,28 +115,29 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 		case MotionEvent.ACTION_DOWN:
 			if(v.equals(tv1)){
 				//Toast.makeText(this, "tv1", Toast.LENGTH_SHORT).show();
-				timePickerFragment1 = new TimePickerFragment();
-				timePickerFragment1.show(getFragmentManager(), "timePicker");
+				//hourMinutePicker_1 = new HourMinuteTimePicker();
+				hourMinutePicker_1.show(getFragmentManager(), "timePicker");
 				switchState = 1;
 				break;
 			}
 			if(v.equals(tv3)){
-				timePickerFragment2 = new TimePickerFragment();
-				timePickerFragment2.show(getFragmentManager(), "timePicker");
+				myNumPicker = new NumPicker();
+				FragmentManager fm = getSupportFragmentManager();
+				myNumPicker.show(fm, "numberPicker");
 				switchState = 2;
 				break;
 			}
 			if(v.equals(tv4)){
-				timePickerFragment3 = new TimePickerFragment();
-				timePickerFragment3.show(getFragmentManager(), "timePicker");
+				hourMinutePicker_3 = new HourMinuteTimePicker();
+				hourMinutePicker_3.show(getFragmentManager(), "timePicker");
 				switchState = 3;
 				break;
 			}
-			if(v.equals(button1)){
+			if(v.equals(enable_accel)){
 				accel = true;
 				break;
 			}
-			if(v.equals(button2)){
+			if(v.equals(disable_accel)){
 				accel = false;
 				break;
 			}
@@ -175,28 +179,53 @@ implements CompoundButton.OnCheckedChangeListener, View.OnTouchListener, EditDia
 				//set the alarm
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(System.currentTimeMillis());
-				calendar.set(Calendar.HOUR_OF_DAY, timePickerFragment1.hour);
-				calendar.set(Calendar.MINUTE, timePickerFragment1.minutes);
+				calendar.set(Calendar.HOUR_OF_DAY, hourMinutePicker_1.hour);
+				calendar.set(Calendar.MINUTE, hourMinutePicker_1.minutes);
 				if(calendar.getTimeInMillis() < System.currentTimeMillis()){
 					calendar.add(Calendar.DAY_OF_MONTH, 1);
 				}
 				Intent intent = new Intent(this, MainActivity.class);   //define alarm callback which activity
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				intent.putExtra("methodName","alarmDialog");
-				alarmIntent = PendingIntent.getActivity(this, 12345, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+				alarmIntent = PendingIntent.getActivity(this, 12345, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 				alarmMgr = (AlarmManager)this.getSystemService(Activity.ALARM_SERVICE);
-				alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+				
+				boolean toggle_state = sharedPreferences.getBoolean("Toggle_State", false);
+				if(toggle_state){
+					int repeatMinutes = Integer.parseInt(sharedPreferences.getString("nap_interval", "5"));
+					alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+					        1000 * 60 * repeatMinutes, alarmIntent);
+				}else{
+					alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+				}
 				//Toast.makeText(this, "hour " + newFragment1.hour + " minute " + newFragment1.minutes, Toast.LENGTH_SHORT).show();
 				break;
 				
 		case 2: mySetting.savePreferences("nap_interval", inputText);
-				tv3.setText("nap interval : " + inputText);
-/*				
-				// setRepeating() lets you specify a precise custom interval--in this case,
-				// 20 minutes.
-				alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-				        1000 * 60 * 20, alarmIntent);
-*/				
+				//tv3.setText("nap interval : " + inputText + " minutes");
+				Calendar calendar_1 = Calendar.getInstance();
+				calendar_1.setTimeInMillis(System.currentTimeMillis());
+				calendar_1.set(Calendar.HOUR_OF_DAY, hourMinutePicker_1.hour);
+				calendar_1.set(Calendar.MINUTE, hourMinutePicker_1.minutes);
+				if(calendar_1.getTimeInMillis() < System.currentTimeMillis()){
+					calendar_1.add(Calendar.DAY_OF_MONTH, 1);
+				}
+				Intent intent_1 = new Intent(this, MainActivity.class);   //define alarm callback which activity
+				intent_1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				intent_1.putExtra("methodName","alarmDialog");
+				alarmIntent = PendingIntent.getActivity(this, 12345, intent_1, PendingIntent.FLAG_CANCEL_CURRENT);
+				alarmMgr = (AlarmManager)this.getSystemService(Activity.ALARM_SERVICE);
+				boolean toggle_state_1 = sharedPreferences.getBoolean("Toggle_State", false);
+				if(toggle_state_1){
+					int repeatMinutes = Integer.parseInt(sharedPreferences.getString("nap_interval", "5"));
+					alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar_1.getTimeInMillis(),
+					        1000 * 60 * repeatMinutes, alarmIntent);
+					
+					tv3.setText("nap interval : " + inputText + " minutes");
+				}else{
+					alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar_1.getTimeInMillis(), alarmIntent);
+					tv3.setText("nap interval disabled");
+				}			
 				break;
 				
 		case 3: mySetting.savePreferences("Must_Wakeup_Alarm", inputText);
